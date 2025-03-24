@@ -2,30 +2,17 @@
 
 import React, { useState } from 'react';
 import axios, { AxiosError } from 'axios';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { Loader2, RefreshCw, SparkleIcon } from 'lucide-react';
+import { RefreshCw, Sparkle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
 import { CardHeader, CardContent, Card, CardTitle } from '@/components/ui/card';
-import { useCompletion } from 'ai/react';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-// import { Textarea } from '@/components/ui/textarea';
-// import { toast } from '@/components/ui/use-toast';
-import * as z from 'zod';
-import { ApiResponse } from '@/types/ApiResponse';
-import Link from 'next/link';
-import { useParams } from 'next/navigation';
-import { messageSchema } from '@/schemas/messageSchema';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
+import * as z from 'zod';
+import { useParams } from 'next/navigation';
+import { messageSchema } from '@/schemas/messageSchema';
 
 const specialChar = '||';
 
@@ -33,30 +20,33 @@ const parseStringMessages = (messageString: string): string[] => {
   return messageString.split(specialChar);
 };
 
-const initialMessageString =
-  "What's your favorite movie?||Do you have any pets?||What's your dream job?";
-
 export default function Page() {
   const params = useParams<{ username: string }>();
   const username = params.username;
-
   const [isSuggestionLoading, setIsSuggestionLoading] = useState(false);
+  const [suggestedMessages, setSuggestedMessages] = useState<string[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
-  const {
-    complete,
-    completion,
-    isLoading: isSuggestLoading,
-    error,
-  } = useCompletion({
-    api: '/api/suggest-messages',
-    initialCompletion: initialMessageString,
-  });
+  const fetchSuggestedMessages = async () => {
+    setIsSuggestionLoading(true);
+    setError(null);
+    try {
+      const res = await axios.get('/api/suggest-messages');
+      if (res.data.message) {
+        setSuggestedMessages(parseStringMessages(res.data.message));
+      } else {
+        setError('No suggestions available.');
+      }
+    } catch (err) {
+      setError('Failed to fetch suggestions. Please try again.');
+    } finally {
+      setIsSuggestionLoading(false);
+    }
+  };
 
   const form = useForm<z.infer<typeof messageSchema>>({
     resolver: zodResolver(messageSchema),
   });
-
-  const messageContent = form.watch('content');
 
   const handleMessageClick = (message: string) => {
     form.setValue('content', message);
@@ -67,34 +57,23 @@ export default function Page() {
   const onSubmit = async (data: z.infer<typeof messageSchema>) => {
     setIsLoading(true);
     try {
-      const response = await axios.post<ApiResponse>('/api/send-message', {
+      const response = await axios.post('/api/send-message', {
         ...data,
         username,
       });
-
       toast(response.data.message);
-      form.reset({ ...form.getValues(), content: '' });
+      form.reset({ content: '' });
     } catch (error) {
-      const axiosError = error as AxiosError<ApiResponse>;
-      toast(axiosError.response?.data.message ?? 'Failed to sent message');
+      const axiosError = error as AxiosError;
+      toast(axiosError.response?.data.message ?? 'Failed to send message');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const fetchSuggestedMessages = async () => {
-    try {
-      complete('');
-    } catch (error) {
-      console.error('Error fetching messages:', error);
-      // Handle error appropriately
-    }
-  };
-
-  
   return (
-    <div className="mx-auto space-y-8 min-h-screen bg-gradient-to-br from-indigo-950 via-purple-900 to-indigo-900 py-12 px-4">
-      <Card className="bg-gradient-to-br from-indigo-950 to-purple-900 border-purple-500/30 shadow-2xl">
+    <div className="mx-auto space-y-8 min-h-screen bg-gradient-to-br from-indigo-950 via-purple-900 to-indigo-900 py-12 px-4 sm:px-6">
+      <Card className="bg-gradient-to-br from-indigo-950 to-purple-900 border-purple-500/30 shadow-2xl max-w-2xl mx-auto">
         <CardHeader className="pb-2">
           <CardTitle className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-100">
             Anonymous Message
@@ -116,11 +95,6 @@ export default function Page() {
                         placeholder="Write your anonymous message here..."
                         className="bg-white/10 border-purple-400/30 placeholder:text-gray-400 text-white focus:border-purple-500 focus:ring-2 focus:ring-purple-400/50 rounded-lg py-6"
                         {...field}
-                        // value={message || field.value}
-                        // onChange={(e) => {
-                        //   field.onChange(e);
-                        //   setMessage(e.target.value);
-                        // }}
                       />
                     </FormControl>
                     <FormMessage className="text-pink-300" />
@@ -147,45 +121,42 @@ export default function Page() {
       </Card>
 
       {/* Suggestions Card */}
-      <Card className="bg-gradient-to-br from-indigo-900/80 to-purple-900/80 backdrop-blur-md border border-purple-500/20 shadow-xl text-white">
+      <Card className="bg-gradient-to-br from-indigo-900/80 to-purple-900/80 backdrop-blur-md border border-purple-500/20 shadow-xl text-white max-w-2xl mx-auto">
         <CardHeader className="pb-2">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-xl font-semibold text-pink-100">
-              Need Inspiration?
-            </CardTitle>
+          <div className="flex items-center justify-between flex-wrap gap-3">
+            <CardTitle className="text-xl font-semibold text-pink-100">Need Inspiration?</CardTitle>
             <Button
               onClick={fetchSuggestedMessages}
               disabled={isSuggestionLoading}
               variant="outline"
               className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 border-0 text-white text-sm px-4 py-2 rounded-lg shadow-md shadow-purple-500/20 transition-all hover:shadow-purple-500/30 flex items-center gap-2"
             >
-              {(isSuggestionLoading) ? (
-                <RefreshCw className="h-4 w-4 animate-spin" />
-              ) : (
-                <RefreshCw className="h-4 w-4" />
-              )}
-              {(isSuggestionLoading) ? "Loading..." : "Get Ideas"}
+              {isSuggestionLoading ? <RefreshCw className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+              {isSuggestionLoading ? "Loading..." : "Get Ideas"}
             </Button>
           </div>
         </CardHeader>
         <CardContent className="pt-2">
-          {!error ? (
-            <div className="space-y-3">
-              {parseStringMessages(completion).map((message, index) => (
-                <Button
-                key={index}
-                variant="outline"
-                onClick={() => handleMessageClick(message)}
-                className="flex items-start gap-3 rounded-lg border border-purple-500/20 bg-indigo-800/40 hover:bg-indigo-700/50 p-4 text-purple-100 transition-all hover:border-purple-500/40 cursor-pointer group"
-                >
-                  <SparkleIcon className="h-5 w-5 text-purple-300 mt-0.5 flex-shrink-0 group-hover:text-purple-200" />
-                  <p className="text-sm group-hover:text-white transition-colors">{message}</p>
-                </Button>
-              ))}
+          {error ? (
+            <div className="text-center py-6 text-purple-300">
+              <p>{error}</p>
             </div>
           ) : (
-            <div className="text-center py-6 text-purple-300">
-              <p>Click "Get Ideas" to see message suggestions</p>
+            <div className="space-y-3">
+              {suggestedMessages.map((message, index) => (
+                <div key={index} className="flex items-start px-2 py-2">
+                  <Sparkle className="h-5 w-5 text-purple-300 mr-2 mt-2 flex-shrink-0 group-hover:text-purple-200" />
+                  <div className="min-w-0 flex-1">
+                    <Button
+                      variant="outline"
+                      onClick={() => handleMessageClick(message)}
+                      className="w-full justify-start py-3 px-4 rounded-lg border border-purple-500/20 bg-indigo-800/40 hover:bg-indigo-700/50 text-purple-100 transition-all hover:border-purple-500/40 text-left h-auto whitespace-normal"
+                    >
+                      {message}
+                    </Button>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </CardContent>
