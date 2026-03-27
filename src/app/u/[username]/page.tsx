@@ -65,7 +65,8 @@ export default function Page() {
       form.reset({ content: '' });
     } catch (error) {
       const axiosError = error as AxiosError;
-      toast(axiosError.response?.data.message ?? 'Failed to send message');
+      const message = (axiosError.response?.data as { message: string })?.message;
+      toast(message ?? 'Failed to send message');
     } finally {
       setIsLoading(false);
     }

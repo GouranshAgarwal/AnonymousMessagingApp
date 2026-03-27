@@ -169,12 +169,11 @@ const Page = () => {
               {messages.length > 0 ? (
                 messages.map((message) => (
                   <MessageCard
-                    key={message?._id}
+                    key={message?._id.toString()}
                     message={message}
-                    className="max-w-md p-8 space-y-8 absolute bg-gradient-to-r from-purple-600 to-pink-600 opacity-90 rounded-lg shadow-md"
                     onMessageDelete={(messageId) =>
                       setMessages((prev) =>
-                        prev.filter((msg) => msg._id !== messageId)
+                        prev.filter((msg) => msg._id.toString() !== messageId)
                       )
                     }
                   />
