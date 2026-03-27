@@ -4,9 +4,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/options";
 import { User } from "next-auth";
 import mongoose from "mongoose";
-import { toast } from "sonner";
 
-export async function GET(request:Request) {
+export async function GET() {
     await dbConnect();
     const session = await getServerSession(authOptions);
         

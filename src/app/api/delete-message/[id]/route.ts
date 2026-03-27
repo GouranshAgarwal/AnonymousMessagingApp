@@ -1,7 +1,6 @@
 import UserModel from "@/model/User";
 import dbConnect from "@/lib/dbConnect";
 import { getServerSession, User } from "next-auth";
-import mongoose from "mongoose";
 import { authOptions } from "../../auth/[...nextauth]/options";
 
 export async function DELETE(request:Request, {params}:{params:Promise<{id:string}>}) {

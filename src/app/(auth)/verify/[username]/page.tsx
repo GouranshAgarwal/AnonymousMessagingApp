@@ -8,7 +8,7 @@ import {useForm } from 'react-hook-form';
 import * as z  from 'zod';
 import axios, { AxiosError } from 'axios';
 import { ApiResponse } from '@/types/ApiResponse';
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
@@ -37,7 +37,7 @@ const VerifyAccount = () => {
         } catch (error) {
             console.error("error while signing up the user", error);
             const axiosError = error as AxiosError<ApiResponse>;
-            let errorMessage = axiosError.response?.data.message;
+            const errorMessage = axiosError.response?.data.message;
             toast(errorMessage); 
         }finally{
             setIsSubmitting(false);

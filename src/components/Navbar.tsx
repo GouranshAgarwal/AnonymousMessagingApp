@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { User } from 'next-auth'
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { MessageCircle, Menu, X, Settings, Bell, ChevronDown, User as UserComponent } from 'lucide-react';
+import { MessageCircle, Menu, X, Settings, ChevronDown, User as UserComponent } from 'lucide-react';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
