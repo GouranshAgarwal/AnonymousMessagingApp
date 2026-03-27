@@ -18,7 +18,12 @@ export const authOptions : NextAuthOptions = {
                 if(!credentials) throw new Error("credentials missing");
                 await dbConnect() //bcz i need to ask the database for the available info to authorize
                 try {
-                    const user = await UserModel.findOne({email:credentials.email})
+                    const user = await UserModel.findOne({
+                        $or: [
+                            { email: credentials.email },
+                            { username: credentials.email }
+                        ]
+                        });
 
                     if(!user){
                         throw new Error("no user found with this email");
@@ -32,6 +37,7 @@ export const authOptions : NextAuthOptions = {
                     if(isPasswordCorrect){
                         return {
                             id: user.id.toString(),
+                            _id: user.id.toString(),
                             email: user.email,
                             username: user.username,
                             isVerified: user.isVerified,
@@ -50,9 +56,9 @@ export const authOptions : NextAuthOptions = {
     callbacks:{
         async jwt({token, user}){
             if(user){
-                token._id = user._id?.toString();
+                token._id = user.id;
                 token.isVerified = user.isVerified;
-                token.isAcceptingMessages = user.isAcceptingMessage;
+                token.isAcceptingMessage = user.isAcceptingMessage;
                 token.username = user.username;
             }
 
