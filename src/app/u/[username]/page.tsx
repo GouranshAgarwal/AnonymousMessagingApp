@@ -37,7 +37,7 @@ export default function Page() {
       } else {
         setError('No suggestions available.');
       }
-    } catch () {
+    } catch {
       setError('Failed to fetch suggestions. Please try again.');
     } finally {
       setIsSuggestionLoading(false);
