@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
-const verifyAccount = () => {
+const VerifyAccount = () => {
     const router = useRouter();
     const param = useParams<{username : string}>();
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -86,4 +86,4 @@ const verifyAccount = () => {
   )
 }
 
-export default verifyAccount;
+export default VerifyAccount;

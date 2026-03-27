@@ -1,4 +1,4 @@
-import {NextAuthOptions} from "next-auth";
+import {NextAuthOptions, User} from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import dbConnect from "@/lib/dbConnect";
@@ -14,15 +14,11 @@ export const authOptions : NextAuthOptions = {
                 email:{label:"Email", type:"text"},
                 password:{label:"Password", type:"password"}
             },
-            async authorize(credentials:any): Promise<any>{
+            async authorize(credentials): Promise<User | null>{
+                if(!credentials) throw new Error("credentials missing");
                 await dbConnect() //bcz i need to ask the database for the available info to authorize
                 try {
-                    const user = await UserModel.findOne({
-                        $or:[
-                            {email:credentials.identifier},
-                            {username:credentials.identifier}
-                        ]
-                    })
+                    const user = await UserModel.findOne({email:credentials.email})
 
                     if(!user){
                         throw new Error("no user found with this email");
@@ -34,12 +30,18 @@ export const authOptions : NextAuthOptions = {
 
                     const isPasswordCorrect = await bcrypt.compare(credentials.password, user.password); //credentials.password is used instead of credentials.identifier bcz password was given this way in the credentials
                     if(isPasswordCorrect){
-                        return user; //finally you need to return the user and next-auth will create the UI and do the further tasks by itself
+                        return {
+                            id: user.id.toString(),
+                            email: user.email,
+                            username: user.username,
+                            isVerified: user.isVerified,
+                            isAcceptingMessage: user.isAcceptingMessage,
+                            }; //finally you need to return the user and next-auth will create the UI and do the further tasks by itself
                     }else{
                         throw new Error("Incorrect Passoword");
                     }
-                } catch (err:any) {
-                    throw new Error(err); // bcz next-auth automatically gives the error message or redirects the user to the error page that is why we need to always throw an error 
+                } catch (err) {
+                    throw err; // bcz next-auth automatically gives the error message or redirects the user to the error page that is why we need to always throw an error 
                 }
             }
 

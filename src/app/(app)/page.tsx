@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, Lock, Shield, Star, Users } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 
 export default function Home() {
@@ -46,7 +45,7 @@ export default function Home() {
                         <p className="text-white text-sm font-medium">Anonymous</p>
                       </div>
                     </div>
-                    <p className="text-white">"Your art inspires me more than you'll ever know. Keep creating, the world needs your vision."</p>
+                    <p className="text-white">{"Your art inspires me more than you'll ever know. Keep creating, the world needs your vision."}</p>
                   </CardContent>
                 </Card>
               </div>
@@ -63,12 +62,12 @@ export default function Home() {
                         <p className="text-white text-sm font-medium">Anonymous</p>
                       </div>
                     </div>
-                    <p className="text-white">"I've been wanting to tell you this for a while - your kindness changed my life. Thank you."</p>
+                    <p className="text-white">{"I've been wanting to tell you this for a while - your kindness changed my life. Thank you."}</p>
                   </CardContent>
                 </Card>
               </div>
               
-              <div className="absolute right-35 transform rotate-4 animate-pulse" style={{ animationDelay: '1s' }}>
+              <div className="absolute right-36 transform rotate-4 animate-pulse" style={{ animationDelay: '1s' }}>
                 <Card className="w-64 bg-gradient-to-br from-indigo-800/90 to-purple-800/90 border-0 shadow-xl backdrop-blur-sm rounded-2xl">
                   <CardContent className="p-5">
                     <div className="flex items-center mb-3">
@@ -80,7 +79,7 @@ export default function Home() {
                         <p className="text-white text-sm font-medium">Anonymous</p>
                       </div>
                     </div>
-                    <p className="text-white">"What's the secret to you productivity."</p>
+                    <p className="text-white">{"What's the secret to you productivity."}</p>
                   </CardContent>
                 </Card>
               </div>
@@ -97,7 +96,7 @@ export default function Home() {
                         <p className="text-white text-sm font-medium">Anonymous</p>
                       </div>
                     </div>
-                    <p className="text-white">"That presentation you gave was brilliant. You have a gift for explaining complex ideas."</p>
+                    <p className="text-white">{"That presentation you gave was brilliant. You have a gift for explaining complex ideas."}</p>
                   </CardContent>
                 </Card>
               </div>

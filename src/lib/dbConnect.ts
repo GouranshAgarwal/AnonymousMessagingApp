@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 type ConnectionObject = {   // tells the type of data that the connection object is returning 
-    isConnected?: Number, //it return a number that's why we declared a number here. The question mark tells that it might not be there (not retured anything)
+    isConnected?: number, //it return a number that's why we declared a number here. The question mark tells that it might not be there (not retured anything)
 } // not compulsory to make this type object 
 
 const connection: ConnectionObject = {}

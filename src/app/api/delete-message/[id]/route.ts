@@ -18,7 +18,7 @@ export async function DELETE(request:Request, {params}:{params:Promise<{id:strin
 
     const user:User = session?.user as User; 
     const {id} = await params;
-    const userId = new mongoose.Types.ObjectId(user._id);
+    // const userId = new mongoose.Types.ObjectId(user._id);
     try {
 
         const deletedUser = await UserModel.updateOne(

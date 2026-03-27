@@ -53,7 +53,7 @@ export async function POST(request:Request) {
 }
 
 
-export async function GET(request:Request) {
+export async function GET() {
     await dbConnect();
     const session = await getServerSession(authOptions);
     if(!session || !session.user){
@@ -82,7 +82,7 @@ export async function GET(request:Request) {
         },{status:200})
 
     } catch (error) {
-        console.error("error getting user status for accepting messages");
+        console.error("error getting user status for accepting messages", error);
         return Response.json({
             success:false,
             message:"failed to get user status for accepting messages",
