@@ -11,23 +11,27 @@ export const authOptions : NextAuthOptions = {
             id:"credentials",
             name: "Credentials",
             credentials:{
-                email:{label:"Email", type:"text"},
+                identifier:{label:"Email or username", type:"text"},
                 password:{label:"Password", type:"password"}
             },
             async authorize(credentials): Promise<User | null>{
                 if(!credentials) throw new Error("credentials missing");
                 await dbConnect() //bcz i need to ask the database for the available info to authorize
+                console.log("LOGIN INPUT:", credentials);
+                
                 try {
                     const user = await UserModel.findOne({
                         $or: [
-                            { email: credentials.email },
-                            { username: credentials.email }
+                            { email: credentials.identifier },
+                            { username: credentials.identifier }
                         ]
                         });
 
                     if(!user){
                         throw new Error("no user found with this email");
                     }
+
+                    console.log("USER FOUND:", user);
 
                     if(!user.isVerified){
                         throw new Error("please verify your account before login");
